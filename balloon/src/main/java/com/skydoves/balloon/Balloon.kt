@@ -989,7 +989,7 @@ class Balloon(
 
   /** sets a [OnAnchorViewClickListener] to the overlay popup. */
   fun setOnAnchorViewClickListener(onAnchorViewClickListener: OnAnchorViewClickListener?) {
-    this.overlayBinding.root.anchorView?.setOnClickListener {
+    this.overlayBinding.balloonOverlayView.anchorView?.setOnClickListener {
       onAnchorViewClickListener?.onAnchorViewClicked()
       if (builder.dismissWhenAnchorViewClicked) dismiss()
     }
