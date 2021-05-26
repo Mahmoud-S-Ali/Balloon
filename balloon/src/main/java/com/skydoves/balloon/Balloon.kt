@@ -989,7 +989,7 @@ class Balloon(
 
   /** sets a [OnAnchorViewClickListener] to the overlay popup. */
   fun setOnAnchorViewClickListener(onAnchorViewClickListener: OnAnchorViewClickListener?) {
-    this.overlayBinding.balloonOverlayView.anchorView?.setOnClickListener {
+    this.builder.anchorView?.setOnClickListener {
       onAnchorViewClickListener?.onAnchorViewClicked()
       if (builder.dismissWhenAnchorViewClicked) dismiss()
     }
@@ -1462,6 +1462,10 @@ class Balloon(
     @JvmField
     @set:JvmSynthetic
     var isStatusBarVisible: Boolean = true
+
+    @JvmField
+    @set:JvmSynthetic
+    var anchorView: View? = null
 
     /** sets the width size. */
     fun setWidth(@Dp value: Int): Builder = apply {
@@ -2052,6 +2056,10 @@ class Balloon(
     /** sets a [View.OnTouchListener] to the popup. */
     fun setOnBalloonTouchListener(value: View.OnTouchListener): Builder = apply {
       this.onBalloonTouchListener = value
+    }
+
+    fun setAnchorView(anchor : View) {
+      this.anchorView = anchor
     }
 
     /** sets a [OnAnchorViewClickListener] to the overlay popup. */
