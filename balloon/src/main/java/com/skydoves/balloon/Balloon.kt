@@ -955,7 +955,7 @@ class Balloon(
 
 
   /** Passes overlay touch to Anchor View. */
-  fun passThroughOverlayTouchAtAnchorView() {
+  fun passThroughOverlayTouchAtAnchorView(onAnchorViewClickListener: OnAnchorViewClickListener) {
     this.overlayWindow.setTouchInterceptor(object : View.OnTouchListener {
       override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         if (event?.action == MotionEvent.ACTION_UP) {
@@ -964,7 +964,7 @@ class Balloon(
 
           if (inViewInBounds(overlayBinding.balloonOverlayView.anchorView,
                           event.rawX.toInt(), event.rawY.toInt())) {
-            overlayBinding.balloonOverlayView.anchorView?.onTouchEvent(event)
+            onAnchorViewClickListener.onAnchorViewClicked()
             if (builder.dismissWhenAnchorViewClicked) dismiss()
             return true
           }
