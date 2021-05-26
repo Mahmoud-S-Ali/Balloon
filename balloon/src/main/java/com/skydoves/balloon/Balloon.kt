@@ -2058,7 +2058,7 @@ class Balloon(
       this.onBalloonTouchListener = value
     }
 
-    fun setAnchorView(anchor : View) {
+    fun setAnchorView(anchor : View): Builder = apply {
       this.anchorView = anchor
     }
 
