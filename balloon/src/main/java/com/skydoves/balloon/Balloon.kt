@@ -34,27 +34,12 @@ import android.os.Handler
 import android.os.Looper
 import android.text.method.MovementMethod
 import android.util.LayoutDirection
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewOutlineProvider
+import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.PopupWindow
-import androidx.annotation.AnimRes
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.annotation.DimenRes
-import androidx.annotation.DrawableRes
-import androidx.annotation.FloatRange
-import androidx.annotation.LayoutRes
-import androidx.annotation.MainThread
-import androidx.annotation.Px
-import androidx.annotation.StringRes
-import androidx.annotation.StyleRes
+import androidx.annotation.*
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.ViewCompat
 import androidx.core.view.forEach
@@ -67,24 +52,7 @@ import com.skydoves.balloon.annotations.Dp
 import com.skydoves.balloon.annotations.Sp
 import com.skydoves.balloon.databinding.LayoutBalloonLibrarySkydovesBinding
 import com.skydoves.balloon.databinding.LayoutBalloonOverlayLibrarySkydovesBinding
-import com.skydoves.balloon.extensions.applyIconForm
-import com.skydoves.balloon.extensions.applyTextForm
-import com.skydoves.balloon.extensions.circularRevealed
-import com.skydoves.balloon.extensions.circularUnRevealed
-import com.skydoves.balloon.extensions.contextColor
-import com.skydoves.balloon.extensions.contextDrawable
-import com.skydoves.balloon.extensions.dimen
-import com.skydoves.balloon.extensions.dimenPixel
-import com.skydoves.balloon.extensions.displaySize
-import com.skydoves.balloon.extensions.dp2Px
-import com.skydoves.balloon.extensions.getIntrinsicHeight
-import com.skydoves.balloon.extensions.getStatusBarHeight
-import com.skydoves.balloon.extensions.getViewPointOnScreen
-import com.skydoves.balloon.extensions.isExistHorizontalDrawable
-import com.skydoves.balloon.extensions.isFinishing
-import com.skydoves.balloon.extensions.px2Sp
-import com.skydoves.balloon.extensions.runOnAfterSDK21
-import com.skydoves.balloon.extensions.visible
+import com.skydoves.balloon.extensions.*
 import com.skydoves.balloon.overlay.BalloonOverlayAnimation
 import com.skydoves.balloon.overlay.BalloonOverlayOval
 import com.skydoves.balloon.overlay.BalloonOverlayShape
@@ -370,7 +338,6 @@ class Balloon(
     setOnBalloonOutsideTouchListener(builder.onBalloonOutsideTouchListener)
     setOnBalloonTouchListener(builder.onBalloonTouchListener)
     setOnBalloonOverlayClickListener(builder.onBalloonOverlayClickListener)
-    setOnAnchorViewClickListener(builder.onAnchorViewClickListener)
   }
 
   private fun initializeBalloonRoot() {
@@ -987,12 +954,39 @@ class Balloon(
   }
 
 
-  /** sets a [OnAnchorViewClickListener] to the overlay popup. */
-  fun setOnAnchorViewClickListener(onAnchorViewClickListener: OnAnchorViewClickListener?) {
-    this.builder.anchorView?.setOnClickListener {
-      onAnchorViewClickListener?.onAnchorViewClicked()
-      if (builder.dismissWhenAnchorViewClicked) dismiss()
-    }
+  /** Passes overlay touch to Anchor View. */
+  fun passThroughOverlayTouchAtAnchorView() {
+    this.overlayWindow.setTouchInterceptor(object : View.OnTouchListener {
+      override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        if (event?.action == MotionEvent.ACTION_UP) {
+          if (overlayBinding.balloonOverlayView.anchorView == null)
+            return false
+
+          if (inViewInBounds(overlayBinding.balloonOverlayView.anchorView,
+                          event.rawX.toInt(), event.rawY.toInt())) {
+            overlayBinding.balloonOverlayView.anchorView?.performClick()
+            if (builder.dismissWhenAnchorViewClicked) dismiss()
+            return true
+          }
+        }
+
+        return false
+      }
+
+    })
+  }
+
+  private fun inViewInBounds(view: View?, x: Int, y: Int): Boolean {
+    if (view == null)
+      return false
+
+    val outRect = Rect()
+    val location = IntArray(2)
+
+    view.getDrawingRect(outRect)
+    view.getLocationOnScreen(location)
+    outRect.offset(location.get(0), location.get(1))
+    return outRect.contains(x, y)
   }
 
   /** sets a [OnBalloonOverlayClickListener] to the overlay popup. */
@@ -1368,10 +1362,6 @@ class Balloon(
 
     @JvmField
     @set:JvmSynthetic
-    var onAnchorViewClickListener: OnAnchorViewClickListener? = null
-
-    @JvmField
-    @set:JvmSynthetic
     var dismissWhenTouchOutside: Boolean = true
 
     @JvmField
@@ -1462,10 +1452,6 @@ class Balloon(
     @JvmField
     @set:JvmSynthetic
     var isStatusBarVisible: Boolean = true
-
-    @JvmField
-    @set:JvmSynthetic
-    var anchorView: View? = null
 
     /** sets the width size. */
     fun setWidth(@Dp value: Int): Builder = apply {
@@ -2056,15 +2042,6 @@ class Balloon(
     /** sets a [View.OnTouchListener] to the popup. */
     fun setOnBalloonTouchListener(value: View.OnTouchListener): Builder = apply {
       this.onBalloonTouchListener = value
-    }
-
-    fun setAnchorView(anchor : View): Builder = apply {
-      this.anchorView = anchor
-    }
-
-    /** sets a [OnAnchorViewClickListener] to the overlay popup. */
-    fun setOnAnchorViewClickListener(value: OnAnchorViewClickListener): Builder = apply {
-      this.onAnchorViewClickListener = value
     }
 
     /** sets a [OnBalloonOverlayClickListener] to the overlay popup. */
