@@ -370,6 +370,7 @@ class Balloon(
     setOnBalloonOutsideTouchListener(builder.onBalloonOutsideTouchListener)
     setOnBalloonTouchListener(builder.onBalloonTouchListener)
     setOnBalloonOverlayClickListener(builder.onBalloonOverlayClickListener)
+    setOnAnchorViewClickListener(builder.onAnchorViewClickListener)
   }
 
   private fun initializeBalloonRoot() {
@@ -985,6 +986,15 @@ class Balloon(
     }
   }
 
+
+  /** sets a [OnAnchorViewClickListener] to the overlay popup. */
+  fun setOnAnchorViewClickListener(onAnchorViewClickListener: OnAnchorViewClickListener?) {
+    this.overlayBinding.root.anchorView?.setOnClickListener {
+      onAnchorViewClickListener?.onAnchorViewClicked()
+      if (builder.dismissWhenAnchorViewClicked) dismiss()
+    }
+  }
+
   /** sets a [OnBalloonOverlayClickListener] to the overlay popup. */
   fun setOnBalloonOverlayClickListener(onBalloonOverlayClickListener: OnBalloonOverlayClickListener?) {
     this.overlayBinding.root.setOnClickListener {
@@ -1358,6 +1368,10 @@ class Balloon(
 
     @JvmField
     @set:JvmSynthetic
+    var onAnchorViewClickListener: OnAnchorViewClickListener? = null
+
+    @JvmField
+    @set:JvmSynthetic
     var dismissWhenTouchOutside: Boolean = true
 
     @JvmField
@@ -1367,6 +1381,10 @@ class Balloon(
     @JvmField
     @set:JvmSynthetic
     var dismissWhenClicked: Boolean = false
+
+    @JvmField
+    @set:JvmSynthetic
+    var dismissWhenAnchorViewClicked: Boolean = false
 
     @JvmField
     @set:JvmSynthetic
@@ -2034,6 +2052,11 @@ class Balloon(
     /** sets a [View.OnTouchListener] to the popup. */
     fun setOnBalloonTouchListener(value: View.OnTouchListener): Builder = apply {
       this.onBalloonTouchListener = value
+    }
+
+    /** sets a [OnAnchorViewClickListener] to the overlay popup. */
+    fun setOnAnchorViewClickListener(value: OnAnchorViewClickListener): Builder = apply {
+      this.onAnchorViewClickListener = value
     }
 
     /** sets a [OnBalloonOverlayClickListener] to the overlay popup. */
