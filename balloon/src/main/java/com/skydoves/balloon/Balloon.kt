@@ -2120,6 +2120,11 @@ class Balloon(
       this.dismissWhenOverlayClicked = value
     }
 
+    /** dismisses when the anchor view popup is clicked. */
+    fun setDismissWhenAnchorViewClicked(value: Boolean): Builder = apply {
+      this.dismissWhenAnchorViewClicked = value
+    }
+
     /** dismisses automatically some milliseconds later when the popup is shown. */
     fun setAutoDismissDuration(value: Long): Builder = apply { this.autoDismissDuration = value }
 
