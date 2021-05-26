@@ -964,7 +964,7 @@ class Balloon(
 
           if (inViewInBounds(overlayBinding.balloonOverlayView.anchorView,
                           event.rawX.toInt(), event.rawY.toInt())) {
-            overlayBinding.balloonOverlayView.anchorView?.performClick()
+            overlayBinding.balloonOverlayView.anchorView?.onTouchEvent(event)
             if (builder.dismissWhenAnchorViewClicked) dismiss()
             return true
           }
