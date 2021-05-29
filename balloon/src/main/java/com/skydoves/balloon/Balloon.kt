@@ -428,6 +428,11 @@ class Balloon(
     traverseAndMeasureTextWidth(binding.balloonCard)
   }
 
+  /** sets views to extract from overlay. */
+  fun setOverlayMaskedViews(value: MutableMap<View, BalloonOverlayShape>) {
+    this.overlayBinding.balloonOverlayView.maskedViews = value
+  }
+
   private fun initializeBalloonOverlay() {
     if (builder.isVisibleOverlay) with(overlayBinding.balloonOverlayView) {
       overlayColor = builder.overlayColor
