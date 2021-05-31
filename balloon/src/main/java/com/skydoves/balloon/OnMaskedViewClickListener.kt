@@ -16,8 +16,10 @@
 
 package com.skydoves.balloon
 
-/** Interface definition for a callback to be invoked when anchor view is clikced. */
-interface OnAnchorViewClickListener {
+import android.view.View
 
-  fun onAnchorViewClicked()
+/** Interface definition for a callback to be invoked when anchor view is clikced. */
+interface OnMaskedViewClickListener {
+
+  fun onMaskedViewClicked(view: View)
 }
